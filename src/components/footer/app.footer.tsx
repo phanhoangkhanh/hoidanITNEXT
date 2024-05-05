@@ -11,6 +11,8 @@ const AppFooter = () => {
   // khi chưa về Client thì ko render ra gì - chờ đến client mới render xuất hiện audio
   // Khi de Server render mà chưa thành hình audio nhưng vẫn render ra giao diện khiến ko có bài hát
   if (!hasMounted) return <></>;
+  console.log("next_ko_biet_chỉ server biet:", process.env.BACKEND_URL);
+  console.log("next_public:", process.env.NEXT_PUBLIC_BACKEND_URL);
   return (
     <>
       <AppBar
@@ -20,7 +22,7 @@ const AppFooter = () => {
         <Container sx={{ display: "flex", gap: 10 }}>
           <AudioPlayer
             autoPlay
-            src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"
+            src={`${process.env.NEXT_PUBLIC_BACKEND_SONG}`}
             onPlay={(e) => console.log("onPlay")}
             style={{ backgroundColor: "#f2f2f2", boxShadow: "unset" }}
             // other props here
