@@ -8,8 +8,17 @@ import Slider from "react-slick";
 import { Box, Button, Divider } from "@mui/material";
 import { ChevronLeftSharp, ChevronRightSharp } from "@mui/icons-material";
 import { Settings } from "react-slick"; // import interface của Slider sang để nhác thuong ko phải default
+import Link from "next/link";
 
-const MainSlider = () => {
+interface IProps {
+  data: ITrackTop[]; // data props chứa mảng phần tử là ItrackTop sẽ dc truyền từ server page sang
+  title: string;
+}
+
+//DATA DC FETCH BÊN SERVER NÉM QUA PROP NHẬN BÊN CLIENT
+const MainSlider = (props: IProps) => {
+  const { data, title } = props;
+
   const NextArrow = (props: any) => {
     return (
       <Button
@@ -69,8 +78,13 @@ const MainSlider = () => {
         className="slider-container"
         sx={{
           margin: "0 50px",
-          ".abc": {
+          ".track": {
             padding: "0 10px",
+
+            img: {
+              height: 150,
+              width: 150,
+            },
           },
           h3: {
             border: "1px solid #ccc",
@@ -79,54 +93,22 @@ const MainSlider = () => {
           },
         }}
       >
-        <h2>Multiple Tracks</h2>
+        <h2>{title}</h2>
 
         <Slider {...settings}>
-          <div className="abc">
-            <h3>Track 1</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 2</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 3</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 4</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 5</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 6</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 7</h3>
-          </div>
-        </Slider>
-        <Divider />
-        <Slider {...settings}>
-          <div className="abc">
-            <h3>Track 1</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 2</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 3</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 4</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 5</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 6</h3>
-          </div>
-          <div className="abc">
-            <h3>Track 7</h3>
-          </div>
+          {data.map((track) => {
+            return (
+              <div className="track" key={track._id}>
+                <img
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${track.imgUrl}`}
+                />
+                <Link href={`/track/${track._id}?audio=${track.trackUrl}`}>
+                  <h4>{track.title}</h4>
+                </Link>
+                <h5>{track.description}</h5>
+              </div>
+            );
+          })}
         </Slider>
         <Divider />
       </Box>
