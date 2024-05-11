@@ -2,7 +2,7 @@
 
 import { useWavesurfer } from "@/utils/customHook";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { WaveSurferOptions } from "wavesurfer.js";
 import WaveSurfer from "wavesurfer.js";
 
@@ -47,9 +47,11 @@ const WaveTrack = () => {
       waveColor: "rgb(200,0,200)",
       progressColor: "rgb(100,0,100)",
       // ta dùng cơ cấu route thư mục /api mà gọi tới url
-      url: `/api?audio=${fileName}`,
+      url: `http://localhost:3000/api?audio=${fileName}`,
     };
   }, []);
+
+  //console.log("optionMemo:", optionMemo);
 
   // bỏ ko dùng useEffect để tạo obj WaveSufer mà dùng useWaveSurfer
   // ko thể dùng option thường - phải dùng useMemo để ngăn việc bắn API lien tuc từ url waveSurder
@@ -68,6 +70,7 @@ const WaveTrack = () => {
   // dùng useMemo để lưu lại option cố định
 
   const wavesurfer = useWavesurfer(containerRef, optionMemo);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   // KO CAN DUNG WAVESUFER QUA 1 USEEFFECT
   // useEffect(() => {
@@ -87,7 +90,38 @@ const WaveTrack = () => {
   //   }
   // }, []);
 
-  return <div ref={containerRef}>wave tracks</div>;
+  console.log("test:", wavesurfer);
+
+  const onPlayClick = useCallback(() => {
+    if (wavesurfer) {
+      wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
+      // cẩn thận nếu viết như bên dưới có thể xảy ra bất đông bô
+      //setIsPlaying(wavesurfer.isPlaying());
+    }
+  }, [wavesurfer]);
+
+  // xử lý tín hieu play - pause
+  useEffect(() => {
+    if (!wavesurfer) return setIsPlaying(false);
+
+    const subcription = [
+      wavesurfer.on("play", () => setIsPlaying(true)),
+      wavesurfer.on("pause", () => setIsPlaying(false)),
+    ];
+
+    return () => {
+      subcription.forEach((unsub) => unsub());
+    };
+  }, [wavesurfer]);
+
+  return (
+    <>
+      <div ref={containerRef}>wave tracks</div>
+      <button onClick={() => onPlayClick()}>
+        {isPlaying === true ? "PAUSE" : "PLAYING"}
+      </button>
+    </>
+  );
 };
 
 export default WaveTrack;

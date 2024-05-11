@@ -20,18 +20,20 @@ export const useWavesurfer = (
   //                            ĐÁNG RA CHỈ CẦN THẾ NÀY - NHƯNG DO TA CÓ KHAI BÁO CONTAINER nên TS lỗi
   options: Omit<WaveSurferOptions, "container"> // loai bỏ thuoc tính container ra- mình truyền riêng sau
 ) => {
-  const [wavesurfer, setWavesurfer] = useState<any>(null);
+  const [wavesurfer, setWavesurfer] = useState<WaveSurfer | any>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    const ws = WaveSurfer.create({
-      ...options,
-      container: containerRef.current,
-    });
-    setWavesurfer(ws);
+    if (containerRef.current) {
+      const ws = WaveSurfer.create({
+        ...options,
+        container: containerRef.current,
+      });
+      setWavesurfer(ws);
 
-    return () => {
-      ws.destroy();
-    };
+      return () => {
+        ws.destroy();
+      };
+    }
   }, [options, containerRef]);
+  return wavesurfer;
 };
