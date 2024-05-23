@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { WaveSurferOptions } from "wavesurfer.js";
 import WaveSurfer from "wavesurfer.js";
+import "./wave.scss";
 
 // KHAI BÁO 1 HOOK USEWAVESUFER ĐỂ SƯ DỤNG - TAO RA 1 OBJ WAVESUFFER
 //- tư chạy lại khi options, containerRef change
@@ -41,13 +42,21 @@ const WaveTrack = () => {
   const fileName = searchParams.get("audio");
   const containerRef = useRef<HTMLDivElement>(null); // TS can giá tri đầu null
 
+  // VU MÀU SẮC THÔI
+  const ctx = document.createElement("canvas").getContext("2d")!;
+  const gradient = ctx.createLinearGradient(0, 0, 0, 150);
+  gradient.addColorStop(0, "rgb(200, 0, 200)");
+  gradient.addColorStop(0.7, "rgb(100, 0, 100)");
+  gradient.addColorStop(1, "rgb(0, 0, 0)");
+
   // DÙNG USEMEMO
-  const optionMemo = useMemo(() => {
+  const optionMemo = useMemo<Omit<WaveSurferOptions, "container">>(() => {
     return {
-      waveColor: "rgb(200,0,200)",
-      progressColor: "rgb(100,0,100)",
       // ta dùng cơ cấu route thư mục /api mà gọi tới url
-      url: `http://localhost:3000/api?audio=${fileName}`,
+      url: `/api?audio=${fileName}`,
+      barWidth: 2,
+      waveColor: gradient,
+      progressColor: "rgba(0, 0, 100, 0.5)",
     };
   }, []);
 
@@ -100,13 +109,31 @@ const WaveTrack = () => {
     }
   }, [wavesurfer]);
 
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secondsRemainder = Math.round(seconds) % 60;
+    const paddedSeconds = `0${secondsRemainder}`.slice(-2);
+    return `${minutes}:${paddedSeconds}`;
+  };
+
   // xử lý tín hieu play - pause
   useEffect(() => {
     if (!wavesurfer) return setIsPlaying(false);
+    // bat doi tuong DOM như Jquery
+    const timeEl = document.querySelector("#time")!;
+    const durationEl = document.querySelector("#duration")!;
 
     const subcription = [
       wavesurfer.on("play", () => setIsPlaying(true)),
       wavesurfer.on("pause", () => setIsPlaying(false)),
+      wavesurfer.on(
+        "decode",
+        (duration: any) => (durationEl.textContent = formatTime(duration))
+      ),
+      wavesurfer.on(
+        "timeupdate",
+        (currentTime: any) => (timeEl.textContent = formatTime(currentTime))
+      ),
     ];
 
     return () => {
@@ -116,7 +143,11 @@ const WaveTrack = () => {
 
   return (
     <>
-      <div ref={containerRef}>wave tracks</div>
+      <div ref={containerRef} className="wave-form-container">
+        wave tracks
+        <div id="time">0:00</div>
+        <div id="duration">0:00</div>
+      </div>
       <button onClick={() => onPlayClick()}>
         {isPlaying === true ? "PAUSE" : "PLAYING"}
       </button>
