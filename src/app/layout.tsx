@@ -1,6 +1,8 @@
 import AppFooter from "@/components/footer/app.footer";
 import AppHeader from "@/components/header/app.header";
 import ThemeRegistry from "@/components/theme-registry/theme.registry";
+import NextAuthWrapper from "@/lib/next.auth.wrapper";
+import { SessionProvider } from "next-auth/react";
 
 // DÀNH CHON SEO - META DATA
 // export const metadata = {
@@ -16,11 +18,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppHeader />
-        {/* Theme dùng cấu hình MUI hoat dong hiệu quả */}
+        <ThemeRegistry>
+          <NextAuthWrapper>
+            <AppHeader />
+            {/* Theme dùng cấu hình MUI hoat dong hiệu quả */}
 
-        <ThemeRegistry>{children}</ThemeRegistry>
-        <AppFooter />
+            {children}
+            <AppFooter />
+          </NextAuthWrapper>
+        </ThemeRegistry>
       </body>
     </html>
   );
