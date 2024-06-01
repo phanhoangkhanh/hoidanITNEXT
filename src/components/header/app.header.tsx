@@ -65,6 +65,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function AppHeader() {
   // từ Auth Next nhan data gắn về biến session để xác đinh AUth nguoi dùng
   const { data: session } = useSession();
+  console.log(">>check session", session);
+
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -109,7 +111,14 @@ export default function AppHeader() {
           Profile
         </Link>
       </MenuItem>
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          signOut();
+        }}
+      >
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -219,7 +228,9 @@ export default function AppHeader() {
                 </>
               ) : (
                 <>
-                  <Link href={"/api/auth/signin"}>Login</Link>
+                  <Link href={"#"} onClick={() => signIn()}>
+                    Login
+                  </Link>
                 </>
               )}
             </Box>
