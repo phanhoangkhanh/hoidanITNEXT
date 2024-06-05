@@ -4,12 +4,13 @@ import { Container } from "@mui/material";
 import { sendRequestJS } from "@/utils/old.api";
 import { sendRequest } from "@/utils/api";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 // nhớ có async nhé - QUAN TRỌNG
 export default async function HomePage() {
   // Dùng AuthOption để kiểm AUth nguoi dùng
   const session = await getServerSession(authOptions);
+  console.log("SERVER SESSION", session);
 
   // fetch data ơ đây để dùng moi truong fetch bên server
   // Đây là fetch ngay ở component không qua async, await gì cả

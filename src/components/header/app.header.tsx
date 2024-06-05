@@ -65,7 +65,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function AppHeader() {
   // từ Auth Next nhan data gắn về biến session để xác đinh AUth nguoi dùng
   const { data: session } = useSession();
-  console.log(">>check session", session);
+  console.log(">>check session Client", session);
 
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -228,9 +228,7 @@ export default function AppHeader() {
                 </>
               ) : (
                 <>
-                  <Link href={"#"} onClick={() => signIn()}>
-                    Login
-                  </Link>
+                  <Link href={"#auth/signin"}>Login</Link>
                 </>
               )}
             </Box>
