@@ -17,6 +17,10 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import Link from "next/link";
+import { ArrowBackIos } from "@mui/icons-material";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/router";
 
 const AuthSignIn = (props: any) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -29,7 +33,8 @@ const AuthSignIn = (props: any) => {
   const [errorUsername, setErrorUsername] = useState<string>("");
   const [errorPassword, setErrorPassword] = useState<string>("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const router = useRouter();
     setIsErrorUsername(false);
     setIsErrorPassword(false);
     setErrorUsername("");
@@ -46,6 +51,20 @@ const AuthSignIn = (props: any) => {
       return;
     }
     console.log(">>> check username: ", username, " pass: ", password);
+
+    // dang nhap bằng SignIn
+    const res = await signIn("credentials", {
+      username: username,
+      password: password,
+    });
+    // signIn thành công
+    if (!res?.error) {
+      // ko dùng dc redirect ở client
+      //redirect("/");
+      router.push("/");
+    } else {
+      alert();
+    }
   };
 
   return (
@@ -78,6 +97,9 @@ const AuthSignIn = (props: any) => {
           }}
         >
           <div style={{ margin: "20px" }}>
+            <Link href="/">
+              <ArrowBackIos />
+            </Link>
             <Box
               sx={{
                 display: "flex",

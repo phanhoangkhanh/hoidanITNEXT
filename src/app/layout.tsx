@@ -16,14 +16,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    // thừa kế từ Layout ngoài app và chỉ thêm Footer + Header
     <html lang="en">
       <body>
-        <AppHeader />
-        {/* Theme dùng cấu hình MUI hoat dong hiệu quả */}
+        <ThemeRegistry>
+          <NextAuthWrapper>
+            {/* Theme dùng cấu hình MUI hoat dong hiệu quả */}
 
-        {children}
-        <AppFooter />
+            {children}
+          </NextAuthWrapper>
+        </ThemeRegistry>
       </body>
     </html>
   );
