@@ -16,11 +16,13 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowBackIos } from "@mui/icons-material";
 import { redirect } from "next/navigation";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const AuthSignIn = (props: any) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -33,8 +35,10 @@ const AuthSignIn = (props: any) => {
   const [errorUsername, setErrorUsername] = useState<string>("");
   const [errorPassword, setErrorPassword] = useState<string>("");
 
+  const [openMessage, setOpenMessage] = useState(false);
+  const [resMessage, setResMessage] = useState("");
+  const router = useRouter();
   const handleSubmit = async () => {
-    const router = useRouter();
     setIsErrorUsername(false);
     setIsErrorPassword(false);
     setErrorUsername("");
@@ -56,6 +60,8 @@ const AuthSignIn = (props: any) => {
     const res = await signIn("credentials", {
       username: username,
       password: password,
+      redirect: false,
+      // NGAN KO CHO CHUYEN TRANG KHI SAI
     });
     // signIn thành công
     if (!res?.error) {
@@ -63,8 +69,10 @@ const AuthSignIn = (props: any) => {
       //redirect("/");
       router.push("/");
     } else {
-      alert();
+      setOpenMessage(true);
+      setResMessage(res?.error);
     }
+    console.log("RESPOND", res);
   };
 
   return (
@@ -131,6 +139,11 @@ const AuthSignIn = (props: any) => {
             <TextField
               onChange={(event) => setPassword(event.target.value)}
               variant="outlined"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmit();
+                }
+              }}
               margin="normal"
               required
               fullWidth
@@ -199,6 +212,20 @@ const AuthSignIn = (props: any) => {
           </div>
         </Grid>
       </Grid>
+      <Snackbar
+        open={openMessage}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+          onClose={() => setOpenMessage(false)}
+        >
+          {resMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

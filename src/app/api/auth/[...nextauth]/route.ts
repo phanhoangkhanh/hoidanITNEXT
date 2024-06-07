@@ -6,6 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { Password } from "@mui/icons-material";
 import type { NextAuthOptions } from "next-auth";
 import { AuthOptions } from "next-auth";
+import { redirect } from "next/dist/server/api-utils";
 
 export const authOptions: AuthOptions = {
   // Configure one or more authentication providers
@@ -45,6 +46,8 @@ export const authOptions: AuthOptions = {
           body: {
             username: credentials?.username,
             password: credentials?.password,
+
+            // QUAN TRONG - KHI SAI THÌ KO CHUYEN TRANG
             //     usename: "admin@gmail.com",
             //    password: "123456",
           },
@@ -115,6 +118,7 @@ export const authOptions: AuthOptions = {
       if (token) {
         session.access_token = token.access_token;
         session.refresh_token = token.refresh_token;
+        //@ts-ignore
         session.user = token.user;
       }
       return session;
