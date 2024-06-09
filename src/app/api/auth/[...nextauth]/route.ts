@@ -78,16 +78,16 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user, account, profile, trigger }: any) {
       if (trigger === "signIn" && account?.provider !== "credentials") {
         // Khi login vào github thành công trả về token - jwt
-        // gan them 1 tham so address vào token.
+        // gan THỬ thêm 1 tham so address vào token.
         // OBJ Token dc tạo ra - lưu bằng cookie ở Client
         //token.address = "hoi dan IT";
 
-        // Sau khi lụm dc Token (co user kèm) từ Provider thì thực hiện việc bắn API về back
+        // Sau khi lụm dc Token (co USER kèm) từ Provider thì thực hiện việc bắn API về back
         const res = await sendRequest<IBackendRes<JWT>>({
           url: "http://localhost:8000/api/v1/auth/social-media",
           method: "POST",
           body: {
-            type: account?.provider?.toLocaleUpperCase(), // github
+            type: account?.provider?.toLocaleUpperCase(), // github viết hoa cho đúng chuẩn
             username: user.email,
           },
         });
@@ -99,7 +99,7 @@ export const authOptions: AuthOptions = {
         }
       }
 
-      // LOCL TU DANG NHAP - next chua san trong biến user khai bao tren jwt
+      // LOGIN TU DANG NHAP - next chua san trong biến user khai bao tren jwt
       if (trigger === "signIn" && user && account?.provider === "credentials") {
         token.access_token = user.access_token;
         token.refresh_token = user.refresh_token;
@@ -109,6 +109,8 @@ export const authOptions: AuthOptions = {
       return token;
     },
     //@ts-ignore
+    // ĐÂY CHÍNH LÀ NAP DATA LAY DC TỪ TOKEN BÊN TRÊN VÔ SESSION - ĐẦY ĐỦ THÌ BACK MỚI CHO HOAT ĐỘNG
+    // session này cũng dc lưu bên clinet- KHI TA KẸP ADDRESS THÌ BÊN TAB HEADER CLIENT CŨNG CÓ BEN CONSOLE
     async session({ session, token, user }) {
       //@ts-ignore
       // gắn token vào session
@@ -126,6 +128,7 @@ export const authOptions: AuthOptions = {
   },
 };
 
+// THỰC THI HÀM NEXT AUTH
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
